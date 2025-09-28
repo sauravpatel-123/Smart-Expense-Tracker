@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>add_expense</title>
+</head>
+
+<body>
+    <form action="/addexpense" method="post">
+        <!-- Time Category -->
+        <div>
+
+            <label>Time Category</label>
+            <select name="time_category" required>
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+                <option>Yearly</option>
+            </select>
+        </div>
+
+        <!-- Expense Type -->
+        <div>
+            <label>Expense Type</label>
+            <select name="expense_type" required>
+                <option>Food</option>
+                <option>Travelling</option>
+                <option>Shopping</option>
+                <option>Fees</option>
+                <option>Bills</option>
+                <option>Health</option>
+                <option>Grocery</option>
+                <option>Other</option>
+            </select>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label>Description</label>
+            <textarea name="description" placeholder="Enter details here (optional)"></textarea>
+        </div>
+        <!-- Amount -->
+        <div>
+            <label>Amount</label>
+            <input type="number" name="amount" step="0.01" min="0.01" required>
+        </div>
+        <!-- Date -->
+        <div>
+            <label>Date</label>
+            <input type="date" name="date" required>
+        </div>
+        <div>
+            <button type="submit">Add Expense</button>
+        </div>
+    </form>
+
+</body>
+
+</html>

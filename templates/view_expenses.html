@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Expenses by Date Range</title>
+</head>
+<body>
+    <h2 style="text-align:center;">View Expenses by Date Range</h2>
+
+    <form action="/view_expenses_range" method="post" style="text-align:center;">
+        <label>Category:</label>
+        <select name="time_category" required>
+            <option value="">--Select--</option>
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Yearly">Yearly</option>
+        </select>
+        &nbsp;&nbsp;
+        <label>From:</label>
+        <input type="date" name="from_date" required>
+        &nbsp;&nbsp;
+        <label>To:</label>
+        <input type="date" name="to_date" required>
+        &nbsp;&nbsp;
+        <button type="submit">View</button>
+    </form>
+
+    {% if expenses %}
+        <h3 style="text-align:center;">Total: ₹ {{ total }}</h3>
+        <table border="1" style="width:80%; margin:auto; border-collapse: collapse;">
+            <tr>
+                <th>Time Category</th>
+                <th>Expense Type</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense[0] }}</td>
+                <td>{{ expense[1] }}</td>
+                <td>{{ expense[2]or '-' }}</td>
+                <td>{{ expense[3] }}</td>
+                <td>{{ expense[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
