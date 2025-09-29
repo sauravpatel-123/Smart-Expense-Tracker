@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>add_expense</title>
+    <title>Add Expense</title>
 </head>
 
 <body>
-    <form action="/addexpense" method="post">
+    <h2>Add Expense</h2>
+    <form id="expenseForm" method="POST" action="/addexpense">
         <!-- Time Category -->
         <div>
-
             <label>Time Category</label>
             <select name="time_category" required>
                 <option>Daily</option>
@@ -41,21 +41,51 @@
             <label>Description</label>
             <textarea name="description" placeholder="Enter details here (optional)"></textarea>
         </div>
+
         <!-- Amount -->
         <div>
             <label>Amount</label>
             <input type="number" name="amount" step="0.01" min="0.01" required>
         </div>
+
         <!-- Date -->
         <div>
             <label>Date</label>
             <input type="date" name="date" required>
         </div>
+
         <div>
             <button type="submit">Add Expense</button>
         </div>
     </form>
 
+    <script>
+        document.getElementById("expenseForm").addEventListener("submit", function (e) {
+            e.preventDefault(); // Stop default submission
+
+            const formData = new FormData(this);
+
+            fetch("/check_budget", {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.over_budget) {
+                        const message = `⚠️ Budget exceeded!\n\nLimit: ₹${data.limit}\nSpent: ₹${data.spent}\nThis expense will exceed your budget.\n\nDo you still want to proceed?`;
+                        if (confirm(message)) {
+                            this.submit(); // Proceed if user confirms
+                        }
+                    } else {
+                        this.submit(); // Safe to submit
+                    }
+                })
+                .catch(err => {
+                    alert("Error checking budget. Please try again.");
+                    console.error(err);
+                });
+        });
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Budget Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            text-align: center;
+        }
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+        th, td {
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h2 {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h2>💰 Budget Status</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Time Category</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Budget Limit (₹)</th>
+                <th>Total Spent (₹)</th>
+                <th>Remaining (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.category }}</td>
+                <td>{{ row.from }}</td>
+                <td>{{ row.to }}</td>
+                <td>{{ "%.2f"|format(row.limit) }}</td>
+                <td>{{ "%.2f"|format(row.spent) }}</td>
+                <td>{{ "%.2f"|format(row.remaining) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

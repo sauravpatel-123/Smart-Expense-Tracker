@@ -1,0 +1,32 @@
+<!-- templates/set_budget.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home_page</title>
+</head>
+
+<body>
+    <h2>Set Budget</h2>
+    <form method="POST" action="/set_budget">
+        <label>Time Category:</label>
+        <select name="time_category" required>
+            <option>Daily</option>
+            <option>Weekly</option>
+            <option>Monthly</option>
+            <option>Yearly</option>
+        </select><br><br>
+
+        <label>Reference Date:</label>
+        <input type="date" name="reference_date" required><br><br>
+
+        <label>Budget Limit (₹):</label>
+        <input type="number" name="budget_limit" step="0.01" required><br><br>
+
+        <button type="submit">Set Budget</button>
+    </form>
+</body>
+
+</html>
