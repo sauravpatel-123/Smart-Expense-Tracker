@@ -1,6 +1,7 @@
 from flask import Flask,render_template,request,session,redirect,flash
 from flask_mysqldb import MySQL
 from datetime import datetime, timedelta
+import math
 
 
 
@@ -207,6 +208,94 @@ def check_budget():
         "from_date": from_date.strftime("%Y-%m-%d"),
         "to_date": to_date.strftime("%Y-%m-%d")
     }
+
+@app.route('/affordability_check')
+def affordability_check():
+    return render_template ('affordability_check.html')
+
+
+@app.route("/check", methods=["POST"])
+def check():
+    # Input fields
+    income = float(request.form["income"])
+    fixed_expenses = float(request.form["fixed_expenses"])
+    variable_expenses = float(request.form["variable_expenses"])
+    savings_goal = float(request.form["savings_goal"])
+    purchase_cost = float(request.form["purchase_cost"])
+
+    # Timeline input
+    timeline_type = request.form["timeline_type"]
+    timeline_value = float(request.form["timeline_value"])
+
+    # Convert timeline to months
+    if timeline_type == "years":
+        total_months = timeline_value * 12
+    elif timeline_type == "months":
+        total_months = timeline_value
+    elif timeline_type == "days":
+        total_months = timeline_value / 30
+    else:
+        total_months = 1  # fallback
+
+    # Disposable income
+    disposable_income = income - (fixed_expenses + variable_expenses + savings_goal)
+
+    # Monthly saving required
+    monthly_required = purchase_cost / total_months if total_months > 0 else purchase_cost
+
+    # Affordability Score
+    if monthly_required == 0:
+        score = 100
+    else:
+        score = int((disposable_income / monthly_required) * 100)
+
+    # Status & color
+    if score >= 80:
+        status = "✅ Easily Affordable"
+        color = "green"
+    elif score >= 50:
+        status = "⚠️ Manageable with Adjustments"
+        color = "orange"
+    else:
+        status = "❌ Not Affordable"
+        color = "red"
+
+    # Recommendations
+    recommendations = []
+    if score < 50:
+        recommendations.append("Try reducing monthly expenses by 10–20%.")
+        recommendations.append("Increase savings or delay purchase.")
+    elif score < 80:
+        recommendations.append("Adjust your budget slightly to afford this.")
+    else:
+        recommendations.append("Great! You can afford this easily.")
+
+    # Timeline calculation based on disposable income
+    if disposable_income > 0:
+        months_needed = math.ceil(purchase_cost / disposable_income)
+        years_needed = months_needed // 12
+        months_needed_remain = months_needed % 12
+        days_needed = int((months_needed - int(months_needed)) * 30)
+        timeline_actual = f"{years_needed} years, {months_needed_remain} months, {days_needed} days"
+    else:
+        timeline_actual = "Not achievable with current income/expenses."
+
+    # Graph data for chart
+    months_range = list(range(1, 13))  # next 12 months
+    savings_accumulated = [disposable_income * m for m in months_range]
+
+    return render_template("affordability_result.html",
+                           score=score,
+                           status=status,
+                           color=color,
+                           disposable=disposable_income,
+                           required=round(monthly_required, 2),
+                           recommendations=recommendations,
+                           timeline_actual=timeline_actual,
+                           months_range=months_range,
+                           savings_accumulated=savings_accumulated,
+                           purchase_cost=purchase_cost)
+
 
 if __name__== '__main__':
     app.run(debug=True)

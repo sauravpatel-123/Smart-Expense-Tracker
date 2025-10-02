@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Affordability Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>💰 Smart Affordability Checker</h1>
+        <form action="/check" method="POST">
+            <div>
+                <label>Monthly Income (₹)</label>
+                <input type="number" name="income" required>
+            </div>
+            <div>
+                <label>Fixed Expenses (₹)</label>
+                <input type="number" name="fixed_expenses" required>
+            </div>
+            <div>
+                <label>Variable Expenses (₹)</label>
+                <input type="number" name="variable_expenses" required>
+            </div>
+            <div>
+                <label>Monthly Savings Goal (₹)</label>
+                <input type="number" name="savings_goal" required>
+            </div>
+            <div>
+                <label>Purchase Cost (₹)</label>
+                <input type="number" name="purchase_cost" required>
+            </div>
+            <div>
+                <label>Timeline</label>
+                <select name="timeline_type" required>
+                    <option value="years">Years</option>
+                    <option value="months">Months</option>
+                    <option value="days">Days</option>
+                </select>
+            </div>
+
+            <input type="number" name="timeline_value" placeholder="Enter value" required>
+    </div>
+    <div>
+        <button type="submit">Check Affordability</button>
+    </div>
+    </form>
+    </div>
+</body>
+
+</html>

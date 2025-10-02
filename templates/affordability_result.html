@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Affordability Result</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .progress-container {
+            width: 100%;
+            background: hsl(0, 4%, 84%);
+            border-radius: 10px;
+            margin: 15px 0;
+            height: 25px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            text-align: center;
+            color: white;
+            line-height: 25px;
+            transition: width 0.5s;
+            font-weight: bold;
+        }
+        .progress-green { background: #58cf5c; }
+        .progress-yellow { background: #ffb300; }
+        .progress-red { background: #e53935; }
+
+        .score-counter {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fefcfc;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #7ddc80;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        .back-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Affordability Result</h1>
+        <p><strong>Status:</strong> <span style="color: {{color}};">{{status}}</span></p>
+
+        <p><strong>Affordability Score:</strong></p>
+        <div class="score-counter" id="scoreCounter">0%</div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar 
+                 {% if score >= 80 %}progress-green
+                 {% elif score >= 50 %}progress-yellow
+                 {% else %}progress-red{% endif %}"
+                 id="progressBar"
+                 style="width: 0%;">
+            </div>
+        </div>
+
+        <p><strong>Disposable Income:</strong> ₹{{disposable}}</p>
+        <p><strong>Monthly Required Saving:</strong> ₹{{required}}</p>
+        <p><strong>Actual Timeline to afford purchase:</strong> {{timeline_actual}}</p>
+
+        <h2>💡 Recommendations</h2>
+        <ul>
+            {% for rec in recommendations %}
+                <li>{{rec}}</li>
+            {% endfor %}
+        </ul>
+
+        <h2>📈 Savings Timeline (next 12 months)</h2>
+        <canvas id="savingsChart" width="400" height="200"></canvas>
+
+        <a href="/" class="back-btn">🔙 Check Another</a>
+    </div>
+
+    <script>
+        // Animated Affordability Score Counter
+        let targetScore = {{score}};
+        let counter = document.getElementById("scoreCounter");
+        let bar = document.getElementById("progressBar");
+        let current = 0;
+        
+        let interval = setInterval(() => {
+            if (current < targetScore) {
+                current++;
+                counter.innerText = current + "%";
+                bar.style.width = (current <= 100 ? current : 100) + "%";
+                bar.innerText = (current <= 100 ? current : 100) + "%";
+            } else {
+                clearInterval(interval);
+            }
+        }, 20); // speed of counting
+
+        // Chart.js for Savings Timeline
+        const ctx = document.getElementById('savingsChart').getContext('2d');
+        const savingsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ months_range|safe }},
+                datasets: [{
+                    label: 'Accumulated Savings (₹)',
+                    data: {{ savings_accumulated|safe }},
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0,0,255,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }, {
+                    label: 'Purchase Cost (₹{{purchase_cost}})',
+                    data: Array({{ months_range|length }}).fill({{purchase_cost}}),
+                    borderColor: 'red',
+                    borderDash: [5,5],
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Months' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Amount (₹)' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
